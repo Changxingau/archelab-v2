@@ -1,0 +1,134 @@
+\documentclass[runningheads]{llncs}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{url}
+
+\begin{document}
+
+\title{ArcheRisk-Core: A Factor-Level Micro-Benchmark for Multi-Agent System Security\\
+via Behaviour Archetypes and Topology Families (Baseline-3)}
+\titlerunning{ArcheRisk-Core}
+
+\author{Anonymous Authors}
+\institute{Anonymous Institution}
+
+\maketitle
+
+\begin{abstract}
+Large Language Model (LLM) multi-agent systems (MAS) introduce new security risks because unsafe behaviour can propagate across roles and communication pathways.
+This paper presents \emph{ArcheRisk-Core}, a reproducible micro-benchmark that isolates two core factors --- \textbf{attacker behaviour archetypes} and \textbf{communication topology families} --- under a controlled three-role MAS abstraction (Planner--Worker--Reviewer).
+We introduce \textbf{ABeRT} (Agent Behaviour--Risk Interaction--Topology), a minimal modelling lens that maps local behavioural deviations into system-level risk events.
+ArcheRisk-Core reports three operational metrics with confidence intervals: Attack Success Rate (ASR), Leak Rate (LR), and Unauthorized Write Rate (UWR).
+Our Baseline-3 experiments show that explicit induction attacks are substantially reduced under defended settings, while covert and mixed attacks remain resilient in certain topologies, motivating topology-aware and dynamic defences.
+\keywords{multi-agent systems \and LLM security \and benchmarking \and topology \and prompt injection}
+\end{abstract}
+
+\section{Introduction}
+ACISP audiences see many practical security evaluations, but MAS security is often reported as a ``black box'': a single end-to-end number for a complex orchestration.
+ArcheRisk-Core targets a complementary goal: \textbf{factor-level diagnosis}.
+We ask: \emph{when a MAS fails, which factor is responsible --- the attacker behaviour, the interaction pathway, or the defence surface?}
+
+To make this question answerable, we build a micro-benchmark around a concrete scenario:
+\textbf{a Planner decomposes a request, a Worker executes it, and a Reviewer validates the output and any tool actions.}
+Typical instances are:
+Planner = ``task manager'' agent, Worker = ``executor'' agent (may use tools), Reviewer = ``policy/compliance'' agent that approves outputs/actions.
+
+\paragraph{Contributions.}
+(1) \textbf{ArcheRisk-Core}, a micro-benchmark with an explicit JSONL episode schema and a one-command runner.
+(2) \textbf{ABeRT}, introduced in this paper, to structure factor-level reasoning across Behaviour, Interaction, and Topology.
+(3) \textbf{Baseline-3} evaluation across \textbf{5 attacker behaviour archetypes}, \textbf{4 topology families}, and \textbf{3 task families} (including non-arithmetic workloads), reporting Wilson 95\% confidence intervals.
+
+\section{ABeRT Lens and Benchmark Factors}
+\subsection{ABeRT: Behaviour--Risk Interaction--Topology}
+ABeRT is a lightweight lens (not a learning model) used to ensure that:
+(i) attacker behaviours are defined independently from task content,
+(ii) risk events are operationally measurable, and
+(iii) topology is explicit (communication graph families, not a binary label).
+
+\subsection{Behaviour Archetypes (Attacker Patterns)}
+ArcheRisk-Core includes five archetypes. Each produces distinct observable traces on the same task:
+\textbf{Manipulator} (direct override), \textbf{Deceiver} (benign framing for leakage), \textbf{Covert Actor} (tool/action focus), \textbf{Infiltrator-Escalator} (multi-step escalation), \textbf{Mixed} (redundant leak + action).
+Appendix examples in the repo show how each archetype differs on identical inputs.
+
+\subsection{Topology Families (Explicit Communication Graphs)}
+We evaluate four topology families:
+\emph{Chain} (Planner$\to$Worker$\to$Reviewer), \emph{Star} (Planner centered), \emph{Fully Connected}, and \emph{Reviewer Hub} (all traffic through Reviewer).
+We also distinguish \textbf{INSECURE} vs \textbf{DEFENDED} \emph{modes} to indicate whether the intended topology and gating are enforced.
+
+\subsection{Defence Baselines (B1--B3)}
+Baseline-1 (B1): no boundary marking or tool guard.
+Baseline-2 (B2): boundary marking for untrusted content + basic induction blocking + tool guard at the enforcement point.
+Baseline-3 (B3): B2 plus stronger verified loop (redaction and stricter release checks).
+
+\subsection{Task Families}
+To avoid overfitting to arithmetic, we include three families:
+(1) \emph{Arithmetic Check} (exact answer), (2) \emph{Policy Triage} (ALLOW/DENY decisions), and (3) \emph{File Triage} (ALLOW/DENY for protected vs unprotected paths).
+These capture common MAS workflows (classification, policy gating, and tool safety).
+
+\section{Threat Model and Metrics}
+\paragraph{Threat model.}
+The attacker can inject \textbf{natural-language} content into the interaction (no code execution privileges).
+The MAS may have tool capabilities (e.g., writing a file), but any tool use must be triggered through agent outputs.
+
+\paragraph{Metrics (operational).}
+We define three binary risk events per episode:
+\textbf{ASR} (attack success): the attack achieves its archetype objective under the scenario policy (e.g., successful leakage or unsafe action that is not prevented on the release path).
+\textbf{LR} (leak): the protected secret token appears in \emph{released} outputs.
+\textbf{UWR} (unauthorized write): the system attempts or performs a write to a protected path (attempts are detected from structured tool-call traces, even if blocked).
+We report Wilson 95\% confidence intervals for all rates.
+
+\section{Baseline-3 Experiments}
+\subsection{Setup}
+We generate $\sim$2000 episodes by factorial design over:
+task family $\times$ topology family $\times$ topology mode $\times$ defence baseline $\times$ archetype (plus a small random top-up for exact count).
+All episodes produce a trace JSON file for reproducibility.
+
+\subsection{Results}
+Table~\ref{tab:asr} reports ASR by archetype under \textbf{DEFENDED} mode, aggregated across tasks and topologies.
+The trend matches practitioner expectations: B2/B3 reduce explicit induction (Manipulator/Deceiver), but covert and mixed archetypes remain resilient.
+Table~\ref{tab:uwr} shows UWR by topology; reviewer-hub consistently reduces unauthorized writes, while star/fully-connected expose bypass surfaces.
+
+\begin{table}[t]
+\caption{Attack Success Rate (ASR) under DEFENDED mode (Wilson 95\% CI).}
+\label{tab:asr}
+\centering
+\input{tables/tab_asr_defended.tex}
+\end{table}
+
+\begin{table}[t]
+\caption{Unauthorized Write Rate (UWR) under DEFENDED mode by topology family (Wilson 95\% CI).}
+\label{tab:uwr}
+\centering
+\input{tables/tab_uwr_topology.tex}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_attack_success_behavior_lncs.pdf}
+\caption{ASR by behaviour archetype under DEFENDED mode across B1--B3.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_leak_behavior_lncs.pdf}
+\caption{Leak Rate by behaviour archetype under DEFENDED mode across B1--B3.}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_unauthorized_write_behavior_lncs.pdf}
+\caption{Unauthorized Write Rate by behaviour archetype under DEFENDED mode across B1--B3.}
+\end{figure}
+
+\section{Ethical Considerations}
+ArcheRisk-Core contains attacker patterns intended for security evaluation.
+To reduce misuse risk, the release focuses on \emph{measurable} risk events, includes defended baselines, and provides guidance for safe experimentation in isolated environments.
+Users should avoid deploying these patterns against systems without explicit authorization.
+
+\section{Availability}
+The benchmark runner, dataset generator, traces, and an A2A adapter compatible with AgentBeats-style pipelines are included in the accompanying repository.
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}

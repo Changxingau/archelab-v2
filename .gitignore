@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+*.egg-info/
+runs/traces/
+runs/traces_a2a/
+paper_lncs/*.aux
+paper_lncs/*.log
+paper_lncs/*.out
+paper_lncs/*.bbl
+paper_lncs/*.blg
+paper_lncs/*.toc

@@ -1,0 +1,16 @@
+[project]
+name = "archerisk-core-final"
+version = "0.4.0"
+description = "ArcheRisk-Core Baseline-3 MAS security micro-benchmark with topology families and A2A adapter."
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.24",
+  "pydantic>=2.0",
+  "matplotlib>=3.7",
+]
+
+[project.scripts]
+arche-risk-gen = "archerisk_core.dataset_generate:main"
+arche-risk-run = "archerisk_core.runner:main"
+arche-risk-aggregate = "archerisk_core.aggregate:main"
+arche-risk-plot = "archerisk_core.plotting:main"
