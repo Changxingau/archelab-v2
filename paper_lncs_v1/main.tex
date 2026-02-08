@@ -48,7 +48,7 @@
 \maketitle
 
 \begin{abstract}
-As the adoption of Large Language Models (LLMs) in Multi-Agent Systems (MAS) continues to expand, security issues have become increasingly prominent. However, existing research has focused mainly on the complex attack and defence scenarios of the MAS pipeline, lacking a systematic analysis of how the underlying risk factors (such as archetypes and topological constraints) affect failure dynamics. To address these limitations, we propose ArcheRisk-Core --- a LLM MAS micro-benchmark that focuses on evaluating the interaction effects of behaviour prototypes and topology configurations. ArcheRisk-Core constructs a controllable evaluation environment using five types of behaviour prototypes (manipulator, covert actor, deceiver, infiltrator escalator, mixed) and two types of topology configurations (secure, defended) and records the dynamic performance of the agent in the three stages of “behaviour deviation → information leakage → state destruction” using a standardised Episode Schema. ArcheRisk-Core supports large-scale, fully reproducible MAS security experiments. In this study, we evaluate a representative dataset of 2,000 episodes, revealing how behavioural dynamics and topological constraints jointly influence three key security indicators: attack success rate, leak rate, and unauthorised write rate. Experiments have shown that explicit inducible attacks (manipulator, deceiver, infiltrator escalator) are easily suppressed in defended configurations, while covert infiltration attacks (covert actor, mixed) maintain high stability in both topology configurations. The goal of ArcheRisk-Core is not to simulate a complete MAS, but to provide a reproducible, scalable, and factor controllable micro benchmark, laying the foundation for future MAS security testing, risk modelling, and multi-hop interaction research.
+As the adoption of Large Language Models (LLMs) in Multi-Agent Systems (MAS) continues to expand, security issues have become increasingly prominent. However, existing research has focused mainly on the complex attack and defence scenarios of the MAS pipeline, lacking a systematic analysis of how the underlying risk factors (such as archetypes and topological constraints) affect failure dynamics. To address these limitations, we propose ArcheRisk-Core --- a LLM MAS micro-benchmark that focuses on evaluating the interaction effects of behaviour prototypes and topology configurations. ArcheRisk-Core constructs a controllable evaluation environment using five types of behaviour prototypes (manipulator, covert actor, deceiver, infiltrator escalator, mixed) and two types of topology configurations (insecure, defended) and records the dynamic performance of the agent in the three stages of “behaviour deviation → information leakage → state destruction” using a standardised Episode Schema. ArcheRisk-Core supports large-scale, fully reproducible MAS security experiments. In this study, we evaluate a representative dataset of 2,000 episodes, revealing how behavioural dynamics and topological constraints jointly influence three key security indicators: attack success rate, leak rate, and unauthorised write rate. Experiments have shown that explicit inducible attacks (manipulator, deceiver, infiltrator escalator) are easily suppressed in defended configurations, while covert infiltration attacks (covert actor, mixed) maintain high stability in both topology configurations. The goal of ArcheRisk-Core is not to simulate a complete MAS, but to provide a reproducible, scalable, and factor controllable micro benchmark, laying the foundation for future MAS security testing, risk modelling, and multi-hop interaction research.
 
 Large language model (LLM) multi-agent systems can fail in security-critical ways because roles are separated, messages propagate across agents, and tool use expands the attack surface. We present ArcheRisk-Core, a controlled benchmark that isolates two factors: attacker messaging behaviours and the agents’ communication topology, under a minimal planner–worker–reviewer workflow. In each episode, an adversary injects a single natural-language message to the Worker, and we log the full multi-turn trace. We score three outcomes: task deviation, secret leakage, and unauthorised tool writes to protected resources, detected in a sandboxed environment. Across attacker behaviours and system configurations, we find that basic static defences substantially reduce overt inducement attacks, while covert infiltration strategies remain resilient and frequently trigger unauthorised tool actions. ArcheRisk-Core provides an extensible, reproducible basis for factor-level MAS security evaluation and comparison of defence designs.
 
@@ -63,7 +63,7 @@ behavioural drivers from structural constraints.~\cite{Sharma2025UMSB}.
 Second, the absence of controllable variables prevents researchers from isolating the independent contributions of behavioural archetypes and topology configurations to system degradation~\cite{maoyuan2025agentsafe}.
 Finally, the engineering overhead of constructing realistic MAS environments makes systematic, large-scale experimentation difficult~\cite{Sharma2025UMSB}.
 
-In this context, we propose ArcheRisk-Core: a factorised micro benchmark for studying the risk generation mechanism of LLM agents. The core design concept is that the security risks of complex MAS stem from a combination of several fundamental factors: behaviour archetype × propagation dynamics × topology constraints. Unlike directly building a complete MAS benchmark, ArcheRisk-Core adopts a minimised three-role abstraction (planner → worker → reviewer) and only retains two types of controllable topology configurations (secure vs defended). In a streamlined but strictly controllable environment, it focuses on examining how different behavioural prototypes drive successful attacks, leaks, and state destruction. and how simple topology/defence configurations can amplify or suppress these behavioural effects. This basic layer micro-benchmark brings three advantages: it is factor-controllable, highly reproducible, and naturally scalable. ArcheRisk-Core does not aim to simulate complete MAS systems, but instead provides a lightweight, factor-controllable benchmark that isolates key drivers of system-level risk. It offers a reproducible foundation for advancing scalable evaluations and cross-framework comparisons in MAS security research. 
+In this context, we propose ArcheRisk-Core: a factorised micro benchmark for studying the risk generation mechanism of LLM agents. The core design concept is that the security risks of complex MAS stem from a combination of several fundamental factors: behaviour archetype × propagation dynamics × topology constraints. Unlike directly building a complete MAS benchmark, ArcheRisk-Core adopts a minimised three-role abstraction (planner → worker → reviewer) and only retains two types of controllable topology configurations (insecure vs defended). In a streamlined but strictly controllable environment, it focuses on examining how different behavioural prototypes drive successful attacks, leaks, and state destruction. and how simple topology/defence configurations can amplify or suppress these behavioural effects. This basic layer micro-benchmark brings three advantages: it is factor-controllable, highly reproducible, and naturally scalable. ArcheRisk-Core does not aim to simulate complete MAS systems, but instead provides a lightweight, factor-controllable benchmark that isolates key drivers of system-level risk. It offers a reproducible foundation for advancing scalable evaluations and cross-framework comparisons in MAS security research. 
 We make the following contributions: 
 \begin{itemize}[topsep=1pt, itemsep=0pt]
     \item We propose a factorised risk modelling framework with five behavioural prototypes and two topology configurations, encoding key stages into an Episode Schema.
@@ -82,6 +82,8 @@ Existing security evaluation frameworks such as RAS-EVAL~\cite{rasEval2025}, Red
 \subsection{MAS Frameworks and Security}
 Classic multi-agent frameworks include AutoGen~\cite{autoGen2023}, ChatDev~\cite{chatDev2023}, CAMEL~\cite{camel2022}, etc., which support workflows composed of multiple agents, such as Planner–Worker–Reviewer, Coder–Tester–Designer, and other structures. Recent work has begun exploring MAS security threats from multiple angles. Some studies focus on malicious prompt injection using optimization-based methods~\cite{Yu2025CODES} or graph-aware distribution strategies~\cite{Khan2025Agents}. Others explore stealthy inter-agent tampering via message manipulation~\cite{Yan2025MAST} or Agent-in-the-Middle attacks~\cite{He2025RedTeam}. Additional threats include information leakage~\cite{Wang2025IP}, link-based phishing~\cite{Kong2025WebFraud}, and coordinated jailbreak amplification~\cite{Qi2025Amplified}.
 In terms of defence, researchers have proposed topology-aware anomaly detection using GNNs~\cite{Wang2025GSafeguard}, unsupervised pattern modelling via contrastive learning~\cite{Miao2025BlindGuard}, and agent-based prompt filtering systems~\cite{Zeng2024AutoDefense}. Broader surveys address MAS-specific security risks~\cite{Ko2025SevenChallenges}, trust and risk frameworks~\cite{Raza2025TRiSM}, and zero-trust architectures for edge-agentic systems~\cite{Liu2025Secure}.
+
+Recent end-to-end evaluations have begun to quantify a security and collaboration trade-off: hardening can reduce compromise, but it can also reduce benign task performance. For example, \emph{Multi-Agent Security Tax}~\cite{Peigne2025SecurityTax} studies ``infectious prompt'' compromises in a realistic autonomous wet-lab setting and reports that stronger safety instructions or memory ``vaccines'' can reduce compromise rates while sometimes degrading cooperative capability. ArcheRisk-Core is complementary: we treat such end-to-end pipelines as the downstream deployment layer, while focusing on factor-level diagnosis by isolating behaviour archetypes and defence surfaces in a minimal workflow. This enables controlled ablations where an outcome shift can be attributed to a single manipulated factor rather than to coupled engineering choices.
 But these MAS security studies rely on fixed workflows, static agent roles, and rigid topologies. This makes it difficult to isolate the independent effects of each risk factor, since agent behaviours and network structure vary only together. As a result, these evaluations resemble one-off system demonstrations rather than general benchmarks. ArcheRisk-Core is designed to fill this gap. It provides a controllable, structured micro-benchmark that is role-aware and topology-aware, so each behavioural archetype and network configuration can be manipulated independently.
 
 \subsection{Behavioural Attacks and Risk Propagation}
@@ -92,13 +94,13 @@ These studies show that misleading information can be exponentially amplified in
 LLM-driven multi-agent systems (MAS) present significant system-level security risks in open environments~\cite{Ko2025SevenChallenges}. Unlike isolated LLMs, MAS vulnerabilities arise from their networked nature. In particular, adversarial effects can propagate across agents (errors amplifying through multi-hop interactions), and network topology can exacerbate risk (attacks targeting highly-connected hub agents may have disproportionate impact). Moreover, different attack modes (e.g., behavioural induction vs. covert infiltration) lead to distinct propagation patterns~\cite{Ko2025SevenChallenges}. Indeed, prior work notes the absence of standardised benchmarks for evaluating LLM MAS’ security in dynamic settings. Two major challenges hinder systematic study: real-world MAS involves many interacting variables which makes causal attribution difficult, and reproducing large-scale MAS experiments can be prohibitively costly~\cite{rasEval2025}.
 
 \subsection{Core Issues}
-Based on these challenges, We therefore formulate our core research question as: How do combinations of agent behavioural archetype and network topology affect attack success, sensitive-information leakage, and unauthorised state modifications within a simplified LLM-agent chain? This focuses on the underlying factor layer of MAS risk. The behavioural factor is the attack mode, the topology factor is the constrained mode (secure vs defended), and the output factors are behaviour deviation, leakage, and state destruction.
+Based on these challenges, We therefore formulate our core research question as: How do combinations of agent behavioural archetype and network topology affect attack success, sensitive-information leakage, and unauthorised state modifications within a simplified LLM-agent chain? This focuses on the underlying factor layer of MAS risk. The behavioural factor is the attack mode, the topology factor is the constrained mode (insecure vs defended), and the output factors are behaviour deviation, leakage, and state destruction.
 
 \subsection{ABeRT Framework}
 We use the ABeRT (Agent Behaviour–Risk Interaction–Topology) three-layer framework to describe the MAS degradation process under attack. As shown in Fig.1, the behaviour layer focuses on when an agent’s decisions deviate abnormally; the risk interaction layer describes how these biases are amplified and propagated through agent communication; the topology layer examines how collaborative network structures evolve or collapse (e.g., key node failures, information flow tampering). With ABeRT, we can define different attack and defence scenarios and measurement indicators to comprehensively record the MAS evolution from local instability to system disintegration. Fig.1 illustrates this framework. However, modelling all three layers at once can be difficult to reproduce. Therefore, ArcheRisk-Core focuses on the interaction effects between the behaviour and topology layers of ABeRT: how different behavioural archetypes drive attack success, leakage, and writing under different topology configuration conditions. This preserves the core structure of MAS security while avoiding real MAS engineering noise.
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figure1.png} 
+    \includegraphics[width=0.85\linewidth]{../paper_lncs_v1/Figure1.png} 
     \caption{ABeRT Framework (Agent Behaviour – Risk Interaction – Topology)}
     \label{fig:ABeRT}
 \end{figure}
@@ -134,6 +136,11 @@ The attacker $\mathcal{A}$ has bounded capabilities:
   \item It operates purely through natural-language instructions, consistent with behaviour-level adversaries in prompt-based attack research~\cite{Yan2025MAST,Khan2025Agents}.
 \end{enumerate}
 
+
+
+\paragraph{Relation to infectious-prompt and multi-hop settings.}
+The attacker model above is intentionally narrower than infectious-prompt settings, where a compromised agent can transmit malicious instructions across multiple hops and gradually poison the broader team state~\cite{Peigne2025SecurityTax}. We adopt a single-injection constraint to keep episodes cheap, deterministic, and comparable across LLM variants, while still capturing behavioural signatures that drive downstream failures. The episode schema already logs the full multi-turn trace, so extending to multi-hop propagation is primarily a change in orchestration (allowing repeated injections or compromised nodes) rather than a rewrite of the measurement pipeline.
+
 \subsubsection*{Attacker Visibility}
 
 The attacker operates under partial observability:
@@ -149,7 +156,7 @@ The attacker aims to trigger one or more measurable failure events defined in th
 \begin{enumerate}
   \item \textbf{Attack success (ASR)}: the worker's output deviates from the intended task.
   \item \textbf{Leakage (LR)}: the episode emits protected information such as a \texttt{SECRET\_TOKEN}.
-  \item \textbf{Unauthorised write (UWR)}: the agent attempts to write malicious content to a protected resource.
+  \item \textbf{Unauthorised write (UWR)}: the episode triggers a concrete write attempt to a protected resource (e.g., a tool-call targeting a non-whitelisted path). Purely textual suggestions are not counted as writes.
 \end{enumerate}
 
 These three categories correspond to behaviour deviation, data leakage, and state corruption—recurring failure modes observed in multi-agent security studies~\cite{Ko2025SevenChallenges,Wang2025IP}.
@@ -280,7 +287,7 @@ Third, merging and standardising logs, archetypes, topology metadata, and episod
 This pipeline produces reproducible multi-agent attack and defence samples across varying conditions and integrates them into a structured dataset for downstream analysis. Fig.2 illustrates this pipeline, which emphasises topology-aware, behaviour modelling, and reproducibility (the original figures are replaced with descriptions for this text version).
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=0.85\linewidth]{Figure2.png} 
+    \includegraphics[width=0.85\linewidth]{../paper_lncs_v1/Figure2.png} 
     \caption{Evaluation Pipeline}
     \label{fig:eval_ipeline}
 \end{figure}
@@ -292,8 +299,8 @@ Using the complete ArcheRisk-Core dataset, we evaluate ASR, Leak Rate, and UWR f
 \subsubsection{Attack Success Rate (Fig.3)}
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=1\linewidth]{fig_attack_success_behavior_lncs.png} 
-    \caption{Attack success rate under different behaviour archetypes in insecure vs.\ defended topology.}
+    \includegraphics[width=1\linewidth]{../paper_lncs_v1/fig_attack_success_behavior_lncs.png} 
+    \caption{Attack success rate under different behaviour archetypes in insecure vs. defended topology.}
     \label{fig:attack-success}
 \end{figure}
 
@@ -303,7 +310,7 @@ The results show manipulators, deceivers, and infiltrator escalators have ~100\%
 
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=1\linewidth]{fig_leak_behavior_lncs.png} 
+    \includegraphics[width=1\linewidth]{../paper_lncs_v1/fig_leak_behavior_lncs.png} 
     \caption{Information leakage rate under different behaviour archetypes in insecure vs. defended topology.}
     \label{fig:leak-behavior}
 \end{figure}
@@ -313,7 +320,7 @@ Leak rates follow a similar trend: manipulators, deceivers, and infiltrator esca
 \subsubsection{Unauthorised Write Rate (Figure 5)}
 \begin{figure}[!t]
     \centering
-    \includegraphics[width=1\linewidth]{fig_unauthorized_write_behavior_lncs.png} 
+    \includegraphics[width=1\linewidth]{../paper_lncs_v1/fig_unauthorized_write_behavior_lncs.png} 
     \caption{Unauthorised write rate under different behaviour archetypes in insecure vs. defended topology.}
     \label{fig:UWR}
 \end{figure}
@@ -336,7 +343,7 @@ This study introduces ArcheRisk-Core, a factorised micro-benchmark for topology-
 ArcheRisk-Core lays the “core layer” for structured MAS security benchmarks: it provides a common framework (attacks, datasets, and metrics) so that future work on realistic topologies, multi-hop interactions, or tool-based agents can be evaluated on a unified scale. We expect ArcheRisk-Core to underpin further research on MAS defences, risk prediction, and adaptive strategies. Future work will extend the framework to larger MAS configurations, richer attack modalities, and formalised risk modelling within the ABeRT paradigm.
 
 \bibliographystyle{splncs04}
-\bibliography{acisp_references}
+\bibliography{../paper_lncs_v1/acisp_references,acisp_references_v2_additions}
 
 % =========================
 % Appendix: Extended Risk Evaluation (ERE)
